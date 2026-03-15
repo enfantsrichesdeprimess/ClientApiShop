@@ -6,6 +6,7 @@ export default {
     state: {
         token: localStorage.getItem('token') || null,
         user: null,
+        role: localStorage.getItem('userRole') || null, // Добавляем роль
         loading: false,
         error: null
     },
@@ -21,6 +22,18 @@ export default {
         },
         SET_USER(state, user) {
             state.user = user
+            if (user && user.role) {
+                localStorage.setItem('userRole', user.role)
+                state.role = user.role
+            }
+        },
+        SET_ROLE(state, role) {
+            state.role = role
+            if (role) {
+                localStorage.setItem('userRole', role)
+            } else {
+                localStorage.removeItem('userRole')
+            }
         },
         SET_LOADING(state, status) {
             state.loading = status
@@ -31,7 +44,9 @@ export default {
         CLEAR_AUTH(state) {
             state.token = null
             state.user = null
+            state.role = null
             localStorage.removeItem('token')
+            localStorage.removeItem('userRole')
         }
     },
 
@@ -45,7 +60,13 @@ export default {
 
                 if (response.token) {
                     commit('SET_TOKEN', response.token)
-                    commit('SET_USER', response.user || { username: userData.username })
+                    const user = {
+                        username: userData.username,
+                        email: userData.email,
+                        role: 'client'
+                    }
+                    commit('SET_USER', user)
+                    commit('SET_ROLE', 'client')
                 }
 
                 return response
@@ -66,7 +87,12 @@ export default {
 
                 if (response.token) {
                     commit('SET_TOKEN', response.token)
-                    commit('SET_USER', { username: credentials.username })
+                    const user = {
+                        username: credentials.username,
+                        role: 'client'
+                    }
+                    commit('SET_USER', user)
+                    commit('SET_ROLE', 'client')
                 }
 
                 return response
@@ -90,6 +116,9 @@ export default {
     getters: {
         isAuthenticated: state => !!state.token,
         currentUser: state => state.user,
+        userRole: state => state.role,
+        isClient: state => state.role === 'client',
+        isGuest: state => !state.token,
         authLoading: state => state.loading,
         authError: state => state.error,
         token: state => state.token
