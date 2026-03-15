@@ -23,6 +23,11 @@
               Мои заказы
             </router-link>
 
+            <router-link to="/cart" class="nav-link" active-class="active">
+              Корзина
+              <span v-if="cartItemsCount > 0" class="badge">{{ cartItemsCount }}</span>
+            </router-link>
+
             <div class="user-menu">
               <span class="user-name">
                 👤 {{ username }}
@@ -84,6 +89,7 @@ export default {
 
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'currentUser', 'userRole']),
+    ...mapGetters('cart', ['cartItemsCount']),
     ...mapState('auth', {
       authError: state => state.error
     }),

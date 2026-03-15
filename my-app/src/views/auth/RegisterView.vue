@@ -4,46 +4,46 @@
       <h1>Регистрация</h1>
 
       <div class="form-group">
-        <label for="username">Имя пользователя</label>
+        <label for="fio">ФИО *</label>
         <input
-            id="username"
+            id="fio"
             type="text"
-            v-model="form.username"
+            v-model="form.fio"
             required
-            :class="{ error: errors.username }"
-            placeholder="Введите имя пользователя"
+            :class="{ error: errors.fio }"
+            placeholder="Иванов Иван Иванович"
         />
-        <span v-if="errors.username" class="error-text">{{ errors.username }}</span>
+        <span v-if="errors.fio" class="error-text">{{ errors.fio }}</span>
       </div>
 
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">Email *</label>
         <input
             id="email"
             type="email"
             v-model="form.email"
             required
             :class="{ error: errors.email }"
-            placeholder="Введите email"
+            placeholder="example@mail.ru"
         />
         <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
       </div>
 
       <div class="form-group">
-        <label for="password">Пароль</label>
+        <label for="password">Пароль *</label>
         <input
             id="password"
             type="password"
             v-model="form.password"
             required
             :class="{ error: errors.password }"
-            placeholder="Введите пароль"
+            placeholder="Минимум 6 символов"
         />
         <span v-if="errors.password" class="error-text">{{ errors.password }}</span>
       </div>
 
       <div class="form-group">
-        <label for="confirmPassword">Подтверждение пароля</label>
+        <label for="confirmPassword">Подтверждение пароля *</label>
         <input
             id="confirmPassword"
             type="password"
@@ -78,7 +78,7 @@ export default {
   data() {
     return {
       form: {
-        username: '',
+        fio: '',
         email: '',
         password: '',
         confirmPassword: ''
@@ -111,8 +111,8 @@ export default {
       this.errors = {}
       let isValid = true
 
-      if (!this.form.username.trim()) {
-        this.errors.username = 'Имя пользователя обязательно'
+      if (!this.form.fio.trim()) {
+        this.errors.fio = 'ФИО обязательно'
         isValid = false
       }
 

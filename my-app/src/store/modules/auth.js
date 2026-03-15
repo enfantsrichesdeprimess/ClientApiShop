@@ -4,9 +4,9 @@ export default {
     namespaced: true,
 
     state: {
-        token: localStorage.getItem('token') || null,
+        token: localStorage.getItem('user_token') || null,
         user: null,
-        role: localStorage.getItem('userRole') || null, // Добавляем роль
+        role: localStorage.getItem('userRole') || 'client', // Все пользователи - клиенты
         loading: false,
         error: null
     },
@@ -15,25 +15,17 @@ export default {
         SET_TOKEN(state, token) {
             state.token = token
             if (token) {
-                localStorage.setItem('token', token)
+                localStorage.setItem('user_token', token)
             } else {
-                localStorage.removeItem('token')
+                localStorage.removeItem('user_token')
             }
         },
         SET_USER(state, user) {
             state.user = user
-            if (user && user.role) {
-                localStorage.setItem('userRole', user.role)
-                state.role = user.role
-            }
         },
         SET_ROLE(state, role) {
             state.role = role
-            if (role) {
-                localStorage.setItem('userRole', role)
-            } else {
-                localStorage.removeItem('userRole')
-            }
+            localStorage.setItem('userRole', role)
         },
         SET_LOADING(state, status) {
             state.loading = status
@@ -45,7 +37,7 @@ export default {
             state.token = null
             state.user = null
             state.role = null
-            localStorage.removeItem('token')
+            localStorage.removeItem('user_token')
             localStorage.removeItem('userRole')
         }
     },
@@ -57,15 +49,17 @@ export default {
 
             try {
                 const response = await shopApi.register(userData)
+                console.log('Register response:', response)
 
-                if (response.token) {
-                    commit('SET_TOKEN', response.token)
-                    const user = {
-                        username: userData.username,
+                const token = response.user_token || response.token
+
+                if (token) {
+                    commit('SET_TOKEN', token)
+                    commit('SET_USER', {
+                        fio: userData.fio,
                         email: userData.email,
                         role: 'client'
-                    }
-                    commit('SET_USER', user)
+                    })
                     commit('SET_ROLE', 'client')
                 }
 
@@ -83,15 +77,17 @@ export default {
             commit('SET_ERROR', null)
 
             try {
-                const response = await shopApi.login(credentials.username, credentials.password)
+                const response = await shopApi.login(credentials.email, credentials.password)
+                console.log('Login response:', response)
 
-                if (response.token) {
-                    commit('SET_TOKEN', response.token)
-                    const user = {
-                        username: credentials.username,
+                const token = response.user_token || response.token
+
+                if (token) {
+                    commit('SET_TOKEN', token)
+                    commit('SET_USER', {
+                        email: credentials.email,
                         role: 'client'
-                    }
-                    commit('SET_USER', user)
+                    })
                     commit('SET_ROLE', 'client')
                 }
 
@@ -118,7 +114,6 @@ export default {
         currentUser: state => state.user,
         userRole: state => state.role,
         isClient: state => state.role === 'client',
-        isGuest: state => !state.token,
         authLoading: state => state.loading,
         authError: state => state.error,
         token: state => state.token

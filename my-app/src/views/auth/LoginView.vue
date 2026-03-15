@@ -4,16 +4,16 @@
       <h1>Вход в систему</h1>
 
       <div class="form-group">
-        <label for="username">Имя пользователя</label>
+        <label for="email">Email</label>
         <input
-            id="username"
-            type="text"
-            v-model="form.username"
+            id="email"
+            type="email"
+            v-model="form.email"
             required
-            :class="{ error: errors.username }"
-            placeholder="Введите имя пользователя"
+            :class="{ error: errors.email }"
+            placeholder="example@mail.ru"
         />
-        <span v-if="errors.username" class="error-text">{{ errors.username }}</span>
+        <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
       </div>
 
       <div class="form-group">
@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       form: {
-        username: '',
+        email: '',
         password: ''
       },
       errors: {}
@@ -71,7 +71,8 @@ export default {
   watch: {
     isAuthenticated(newValue) {
       if (newValue) {
-        this.$router.push('/')
+        const redirectPath = this.$route.query.redirect || '/'
+        this.$router.push(redirectPath)
       }
     }
   },
@@ -83,8 +84,11 @@ export default {
       this.errors = {}
       let isValid = true
 
-      if (!this.form.username.trim()) {
-        this.errors.username = 'Имя пользователя обязательно'
+      if (!this.form.email.trim()) {
+        this.errors.email = 'Email обязателен'
+        isValid = false
+      } else if (!/\S+@\S+\.\S+/.test(this.form.email)) {
+        this.errors.email = 'Введите корректный email'
         isValid = false
       }
 
@@ -227,4 +231,5 @@ export default {
 .form-actions a:hover {
   text-decoration: underline;
 }
+
 </style>
